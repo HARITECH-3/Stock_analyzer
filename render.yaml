@@ -14,5 +14,9 @@ services:
         value: 2
       - key: DEBUG
         value: "False"
+      - key: SECRET_KEY
+        generateValue: true
       - key: ALLOWED_HOSTS
-        value: ".onrender.com"
+        value: "stock-analyser.onrender.com,127.0.0.1,localhost"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://stock-analyser.onrender.com"
