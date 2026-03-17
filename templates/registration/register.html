@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register • StockPulse</title>
+    {% load static %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="auth-body">
+    <div class="auth-card">
+        <h1 class="logo">StockPulse</h1>
+        {% if messages %}
+            <div class="message-stack">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <label>Username</label>
+            {{ form.username }}
+            {{ form.username.errors }}
+            <label>Password</label>
+            {{ form.password1 }}
+            {{ form.password1.errors }}
+            <label>Confirm Password</label>
+            {{ form.password2 }}
+            {{ form.password2.errors }}
+            <button type="submit" class="btn auth-btn">Create Account</button>
+        </form>
+        <p class="auth-link">Already have account? <a href="{% url 'login' %}">Login</a></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ ticker }} • StockPulse{% endblock %}
+
+{% block content %}
+<section class="stock-topbar">
+    <a href="{% url 'explore' %}" class="icon-btn">←</a>
+    <div class="holding-name">{{ stock_name }}</div>
+    <button class="icon-btn" type="button">⤴</button>
+</section>
+
+<section>
+    <div class="detail-price">{{ live.price_display }}</div>
+    <div class="{% if live.is_up %}price-up{% else %}price-down{% endif %}">
+        {{ live.change_display }} ({{ live.change_percent }}%) 1D
+    </div>
+    <div class="detail-meta">
+        <span class="exchange-pill">{{ exchange }}</span>
+        <span>{{ sector }}</span>
+    </div>
+</section>
+
+<section class="chart-box card-dark">
+    <canvas id="stockChart" data-ticker="{{ ticker }}"></canvas>
+</section>
+
+<div class="tab-row range-tabs" data-ticker="{{ ticker }}" data-canvas="stockChart">
+    <button class="tab-item active" data-period="1d">1D</button>
+    <button class="tab-item" data-period="1w">1W</button>
+    <button class="tab-item" data-period="1m">1M</button>
+    <button class="tab-item" data-period="1y">1Y</button>
+    <button class="tab-item" data-period="3y">3Y</button>
+    <button class="tab-item" data-period="all">ALL</button>
+</div>
+
+<div class="tab-row">
+    <button class="tab-item active">Overview</button>
+    <button class="tab-item">F&O</button>
+    <button class="tab-item">Events</button>
+    <button class="tab-item">News</button>
+</div>
+
+<section class="card">
+    <div class="section-title">Performance</div>
+    <div class="range-row">
+        <span>{{ day_low }}</span>
+        <span>{{ day_high }}</span>
+    </div>
+    <div class="range-bar"><div class="range-fill" style="width: {{ day_range_pct }}%;"></div></div>
+    <div class="range-row mt-12">
+        <span>{{ week52_low }}</span>
+        <span>{{ week52_high }}</span>
+    </div>
+    <div class="range-bar"><div class="range-fill" style="width: {{ week52_range_pct }}%;"></div></div>
+</section>
+
+<section class="card prediction-card" id="predictionCard" data-ticker="{{ ticker }}">
+    <div class="prediction-label">✦ AI Prediction</div>
+    <div class="prediction-price" id="predictedPrice">{{ prediction.predicted_price_display }}</div>
+    <span id="predBadge" class="badge-{% if prediction.direction == 'BUY' %}buy{% elif prediction.direction == 'SELL' %}sell{% else %}hold{% endif %}">
+        {{ prediction.direction }}
+    </span>
+    <div class="confidence-row">
+        <span>Confidence</span>
+        <span id="predConfidence">{{ prediction.confidence }}%</span>
+    </div>
+    <div class="range-bar"><div id="predFill" class="range-fill" style="width: {{ prediction.confidence }}%;"></div></div>
+    <div class="sentiment-row">SST Sentiment Score: <strong>{{ sentiment }}</strong></div>
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        loadLineChart("{{ ticker }}", "1d", "stockChart");
+        loadPrediction("{{ ticker }}");
+    });
+</script>
+{% endblock %}

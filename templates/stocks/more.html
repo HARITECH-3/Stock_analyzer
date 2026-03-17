@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}More • StockPulse{% endblock %}
+
+{% block content %}
+<section class="card">
+    <div class="section-title">Account</div>
+    <p class="secondary">Signed in as {{ request.user.username }}</p>
+</section>
+
+<section class="card">
+    <div class="section-title">Quick Links</div>
+    <div class="more-links">
+        <a href="{% url 'dashboard' %}" class="auth-nav-link">Dashboard</a>
+        <a href="{% url 'watchlist' %}" class="auth-nav-link">Watchlist</a>
+        <a href="{% url 'explore' %}" class="auth-nav-link">Explore</a>
+    </div>
+</section>
+
+<section class="card">
+    <div class="section-title">Session</div>
+    <p class="secondary">Use logout to securely end your session.</p>
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger mt-12">Logout</button>
+    </form>
+</section>
+{% endblock %}

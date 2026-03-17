@@ -1,0 +1,12 @@
+django>=5.0
+djangorestframework
+yfinance
+numpy
+pandas
+scikit-learn
+torch
+requests
+gunicorn
+whitenoise
+dj-database-url
+psycopg[binary]

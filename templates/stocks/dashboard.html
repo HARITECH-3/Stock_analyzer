@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard • StockPulse{% endblock %}
+
+{% block content %}
+<section class="card portfolio-card">
+    <div class="label">Current Value</div>
+    <div class="big-price">{{ total_value_display }}</div>
+    <div class="returns-row">
+        <span>Total Returns</span>
+        <span class="{% if total_returns_pct >= 0 %}price-up{% else %}price-down{% endif %}">
+            {{ total_returns_display }} ({{ total_returns_pct }}%)
+        </span>
+    </div>
+    <div class="secondary">Invested Value {{ invested_value_display }}</div>
+</section>
+
+<section>
+    <div class="section-title">Holdings</div>
+    {% for holding in holdings %}
+    <div class="card holding-item">
+        <div>
+            <div class="holding-name">{{ holding.ticker }}</div>
+            <small class="secondary">{{ holding.shares }} shares</small>
+            <div class="{% if holding.is_up %}price-up{% else %}price-down{% endif %}">
+                {{ holding.pnl_display }} ({{ holding.pnl_pct }}%)
+            </div>
+        </div>
+        <div class="holding-value">{{ holding.current_value_display }}</div>
+    </div>
+    {% endfor %}
+</section>
+
+<section>
+    <div class="section-title">LSTM Predictions</div>
+    {% for pred in predictions %}
+    <div class="card prediction-item">
+        <div>
+            <div class="holding-name">{{ pred.ticker }}</div>
+            <small class="secondary">Predicted {{ pred.predicted_price_display }}</small>
+        </div>
+        <span class="badge-{% if pred.direction == 'BUY' %}buy{% elif pred.direction == 'SELL' %}sell{% else %}hold{% endif %}">
+            {{ pred.direction }}
+        </span>
+    </div>
+    {% endfor %}
+</section>
+{% endblock %}

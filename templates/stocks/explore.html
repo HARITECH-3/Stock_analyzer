@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Explore • StockPulse{% endblock %}
+
+{% block content %}
+{% if not user.is_authenticated %}
+<section class="card auth-cta-card">
+    <div class="section-title">Start Investing with StockPulse</div>
+    <p class="secondary">Create your account or login to manage your watchlist and AI predictions.</p>
+    <div class="auth-cta-actions">
+        <a href="{% url 'login' %}" class="auth-nav-link">Login</a>
+        <a href="{% url 'register' %}" class="auth-nav-link auth-nav-link-primary">Register</a>
+    </div>
+</section>
+{% endif %}
+
+<section>
+    <div class="section-title">Market Indices</div>
+    <div class="h-scroll">
+        {% for idx in indices %}
+        <div class="market-index-card card">
+            <div class="index-name">{{ idx.name }}</div>
+            <div class="index-value">{{ idx.value_display }}</div>
+            <div class="{% if idx.is_up %}price-up{% else %}price-down{% endif %}">
+                {{ idx.change }} ({{ idx.change_percent }}%)
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section>
+    <div class="section-header-row">
+        <div class="section-title">Top Gainers</div>
+        <a href="#" class="see-more">SEE MORE</a>
+    </div>
+    <div class="h-scroll">
+        {% for stock in gainers %}
+        <a href="{% url 'stock_detail' stock.ticker %}" class="stock-chip">
+            <div class="chip-logo">{{ stock.ticker|slice:':2' }}</div>
+            <div class="chip-name">{{ stock.ticker }}</div>
+            <div class="chip-price">{{ stock.price_display }}</div>
+            <div class="price-up">{{ stock.change_percent }}%</div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<section>
+    <div class="section-header-row">
+        <div class="section-title">Top Losers</div>
+        <a href="#" class="see-more">SEE MORE</a>
+    </div>
+    <div class="h-scroll">
+        {% for stock in losers %}
+        <a href="{% url 'stock_detail' stock.ticker %}" class="stock-chip">
+            <div class="chip-logo">{{ stock.ticker|slice:':2' }}</div>
+            <div class="chip-name">{{ stock.ticker }}</div>
+            <div class="chip-price">{{ stock.price_display }}</div>
+            <div class="price-down">{{ stock.change_percent }}%</div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<section>
+    <div class="section-title">Stocks in News</div>
+    {% for item in news_items %}
+    <div class="card news-card">
+        <div class="news-meta">{{ item.source }} · {{ item.time_ago }}</div>
+        <div class="news-headline">{{ item.headline }}</div>
+        <div class="news-badge {% if item.is_up %}badge-buy{% else %}badge-sell{% endif %}">
+            {{ item.stock }} {{ item.change }}
+        </div>
+    </div>
+    {% endfor %}
+</section>
+{% endblock %}

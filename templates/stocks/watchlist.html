@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Watchlist • StockPulse{% endblock %}
+
+{% block content %}
+<section>
+    <div class="section-header-row">
+        <div class="section-title">Your Watchlist</div>
+        <form method="post" action="{% url 'watchlist_add' %}" class="inline-form">
+            {% csrf_token %}
+            <input type="text" name="ticker" placeholder="Add ticker" required>
+            <input type="hidden" name="exchange" value="NSE">
+            <button type="submit" class="btn">+</button>
+        </form>
+    </div>
+
+    {% if stocks %}
+        {% for stock in stocks %}
+        <div class="card watch-row">
+            <div>
+                <div class="holding-name">{{ stock.ticker }}</div>
+                <span class="exchange-pill">{{ stock.exchange }}</span>
+            </div>
+            <div>
+                <div class="holding-value">{{ stock.price_display }}</div>
+                <div class="{% if stock.is_up %}price-up{% else %}price-down{% endif %}">{{ stock.change_percent }}%</div>
+            </div>
+            <svg class="sparkline" viewBox="0 0 60 24" data-ticker="{{ stock.ticker }}"></svg>
+            <form method="post" action="{% url 'watchlist_remove' %}">
+                {% csrf_token %}
+                <input type="hidden" name="ticker" value="{{ stock.ticker }}">
+                <input type="hidden" name="exchange" value="{{ stock.exchange }}">
+                <button type="submit" class="remove-btn">🗑</button>
+            </form>
+        </div>
+        {% endfor %}
+    {% else %}
+    <div class="card empty-state">
+        <p>Add stocks to track them here</p>
+        <form method="post" action="{% url 'watchlist_add' %}" class="inline-form center">
+            {% csrf_token %}
+            <input type="text" name="ticker" placeholder="e.g. TCS" required>
+            <input type="hidden" name="exchange" value="NSE">
+            <button type="submit" class="btn">+</button>
+        </form>
+    </div>
+    {% endif %}
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".sparkline").forEach((el) => {
+            loadMiniSparkline(el.dataset.ticker, el);
+        });
+    });
+</script>
+{% endblock %}

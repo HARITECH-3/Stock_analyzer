@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}StockPulse{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=20260317a">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="{% static 'js/charts.js' %}?v=20260316c"></script>
+</head>
+<body>
+    <div class="app-shell">
+        <header class="top-bar">
+            <div class="logo">StockPulse</div>
+            <div class="top-icons">
+                {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'logout' %}" class="top-logout-form">
+                        {% csrf_token %}
+                        <button type="submit" class="top-logout-btn">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}" class="auth-nav-link">Login</a>
+                    <a href="{% url 'register' %}" class="auth-nav-link auth-nav-link-primary">Register</a>
+                {% endif %}
+            </div>
+        </header>
+
+        <main class="main-content">
+            {% if messages %}
+                <div class="message-stack">
+                    {% for message in messages %}
+                        <div class="message {{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% block content %}{% endblock %}
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="{% url 'explore' %}" class="nav-item {% if active_tab == 'explore' %}active{% endif %}">
+                <span>◎</span>
+                <small>Explore</small>
+            </a>
+            <a href="{% url 'watchlist' %}" class="nav-item {% if active_tab == 'watchlist' %}active{% endif %}">
+                <span>◉</span>
+                <small>Watchlist</small>
+            </a>
+            <a href="{% url 'dashboard' %}" class="nav-item {% if active_tab == 'dashboard' %}active{% endif %}">
+                <span>◈</span>
+                <small>Dashboard</small>
+            </a>
+            <a id="moreNavLink" href="{% if user.is_authenticated %}{% url 'more' %}{% else %}{% url 'login' %}{% endif %}" class="nav-item {% if active_tab == 'more' %}active{% endif %}">
+                <span>☰</span>
+                <small>More</small>
+            </a>
+        </nav>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const moreNav = document.getElementById("moreNavLink");
+            if (!moreNav) return;
+            moreNav.addEventListener("click", function () {
+                const href = moreNav.getAttribute("href");
+                if (href) {
+                    window.location.assign(href);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

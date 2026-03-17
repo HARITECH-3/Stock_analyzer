@@ -1,0 +1,15 @@
+<div class="stock-card {% if variant == 'light' %}stock-card-light{% else %}stock-card-dark{% endif %}">
+    <div class="stock-card-head">
+        <h4>{{ stock.ticker }}</h4>
+        <div class="stock-price">{{ stock.price_display }}</div>
+    </div>
+    <div class="stock-change {% if stock.is_up %}price-up{% else %}price-down{% endif %}">
+        {{ stock.change_display }} ({{ stock.change_percent }}%)
+    </div>
+    <svg class="mini-line" viewBox="0 0 120 40" preserveAspectRatio="none" data-series="{{ stock.series|join:',' }}" data-up="{{ stock.is_up|yesno:'1,0' }}"></svg>
+    <div class="range-labels">
+        <span>{{ stock.series.0|default:stock.price_display }}</span>
+        <span>{{ stock.series|last|default:stock.price_display }}</span>
+    </div>
+    <div class="triangle-indicator"></div>
+</div>

@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: stock-analyser
+    env: python
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn stockpulse.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: DJANGO_SETTINGS_MODULE
+        value: stockpulse.settings
+      - key: WEB_CONCURRENCY
+        value: 2
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
