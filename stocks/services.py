@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 
 import numpy as np
 import pandas as pd
-import yfinance as yf
 
 INDIAN_STOCKS = [
     "TATASTEEL",
@@ -79,6 +78,8 @@ def _mock_price_history(period="3mo"):
 
 
 def get_historical_data(ticker, period="3mo", exchange="NSE"):
+    import yfinance as yf
+    
     yf_ticker = _ticker_with_suffix(ticker, exchange)
     try:
         data = yf.Ticker(yf_ticker).history(period=period)

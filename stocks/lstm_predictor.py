@@ -1,6 +1,17 @@
 """LSTM-based price prediction module with lazy loading of heavy dependencies."""
 
-from .services import format_indian_price, get_historical_data
+
+# Lazy load helper functions to avoid early yfinance import
+def _get_format_indian_price():
+    """Import and return the format_indian_price function."""
+    from .services import format_indian_price
+    return format_indian_price
+
+
+def _get_historical_data():
+    """Import and return the get_historical_data function."""
+    from .services import get_historical_data
+    return get_historical_data
 
 
 class PriceLSTM:
@@ -10,7 +21,6 @@ class PriceLSTM:
         import torch
         import torch.nn as nn
 
-        super().__init__()
         self.torch = torch
         self.nn = nn
         self.input_size = input_size
@@ -25,6 +35,14 @@ class PriceLSTM:
         out, _ = self.lstm(x, (h0, c0))
         out = self.fc(out[:, -1, :])
         return out
+
+    def __call__(self, x):
+        """Make the model callable."""
+        return self.forward(x)
+
+    def eval(self):
+        """Set model to evaluation mode (dummy for compatibility)."""
+        return self
 
 
 def prepare_data(df, window_size=60):
@@ -55,9 +73,13 @@ def prepare_data(df, window_size=60):
 def predict(ticker):
     """
     Predict stock price using LSTM.
-    Heavy dependencies (torch, sklearn) are loaded only when prediction is needed.
+    Heavy dependencies (torch, sklearn, yfinance) are loaded only when prediction is needed.
     """
     import torch
+    
+    # Lazy load format and data functions
+    format_indian_price = _get_format_indian_price()
+    get_historical_data = _get_historical_data()
 
     df = get_historical_data(ticker, period="6mo")
     if df.empty or "Close" not in df.columns:
