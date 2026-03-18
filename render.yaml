@@ -4,19 +4,19 @@ services:
     env: python
     plan: free
     buildCommand: "./build.sh"
-    startCommand: "gunicorn stockpulse.wsgi:application"
+    startCommand: "gunicorn --workers 1 --worker-class sync --timeout 120 --max-requests 100 stockpulse.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
       - key: DJANGO_SETTINGS_MODULE
         value: stockpulse.settings
-      - key: WEB_CONCURRENCY
-        value: 2
       - key: DEBUG
         value: "False"
+      - key: ENVIRONMENT
+        value: "production"
       - key: SECRET_KEY
         generateValue: true
       - key: ALLOWED_HOSTS
-        value: "stock-analyser.onrender.com,127.0.0.1,localhost"
+        value: "127.0.0.1,localhost"
       - key: CSRF_TRUSTED_ORIGINS
-        value: "https://stock-analyser.onrender.com"
+        value: "https://*.onrender.com"

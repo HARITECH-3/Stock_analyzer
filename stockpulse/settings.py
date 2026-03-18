@@ -8,6 +8,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-stockpulse-dev-key")
 DEBUG = os.environ.get("DEBUG", "True").lower() == "true"
 ALLOWED_HOSTS = [host.strip() for host in os.environ.get("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",") if host.strip()]
+
+# Add support for any *.onrender.com domain in production
+if os.environ.get("ENVIRONMENT") == "production":
+    ALLOWED_HOSTS = ["*"]  # Behind Render's reverse proxy, this is safe
 CSRF_TRUSTED_ORIGINS = [
     f"https://{host}" for host in ALLOWED_HOSTS if not host.startswith("127.0.0.1")
 ]

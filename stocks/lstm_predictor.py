@@ -1,28 +1,37 @@
-import numpy as np
-import torch
-import torch.nn as nn
-from sklearn.preprocessing import MinMaxScaler
+"""LSTM-based price prediction module with lazy loading of heavy dependencies."""
 
 from .services import format_indian_price, get_historical_data
 
 
-class PriceLSTM(nn.Module):
+class PriceLSTM:
+    """Lazy-loaded LSTM model to avoid memory overhead on startup."""
+
     def __init__(self, input_size=1, hidden_size=64, num_layers=2):
+        import torch
+        import torch.nn as nn
+
         super().__init__()
+        self.torch = torch
+        self.nn = nn
+        self.input_size = input_size
         self.hidden_size = hidden_size
         self.num_layers = num_layers
         self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
         self.fc = nn.Linear(hidden_size, 1)
 
     def forward(self, x):
-        h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size)
-        c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size)
+        h0 = self.torch.zeros(self.num_layers, x.size(0), self.hidden_size)
+        c0 = self.torch.zeros(self.num_layers, x.size(0), self.hidden_size)
         out, _ = self.lstm(x, (h0, c0))
         out = self.fc(out[:, -1, :])
         return out
 
 
 def prepare_data(df, window_size=60):
+    import numpy as np
+    import torch
+    from sklearn.preprocessing import MinMaxScaler
+
     closes = df["Close"].values.reshape(-1, 1)
     scaler = MinMaxScaler(feature_range=(0, 1))
     scaled_data = scaler.fit_transform(closes)
@@ -44,6 +53,12 @@ def prepare_data(df, window_size=60):
 
 
 def predict(ticker):
+    """
+    Predict stock price using LSTM.
+    Heavy dependencies (torch, sklearn) are loaded only when prediction is needed.
+    """
+    import torch
+
     df = get_historical_data(ticker, period="6mo")
     if df.empty or "Close" not in df.columns:
         return {
