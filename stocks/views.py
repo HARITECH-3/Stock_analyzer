@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.utils.decorators import method_decorator
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -22,6 +22,13 @@ from .services import (
     get_top_gainers,
     get_top_losers,
 )
+
+
+# Health check endpoint for Render - lightweight, no data loading
+@require_GET
+def health_check(request):
+    """Simple health check endpoint without loading any data."""
+    return JsonResponse({"status": "ok"}, status=200)
 
 
 class DashboardView(View):

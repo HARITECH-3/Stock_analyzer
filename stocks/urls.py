@@ -9,6 +9,7 @@ from .views import (
     PredictAPIView,
     StockDetailView,
     WatchlistView,
+    health_check,
     home_redirect,
     register_view,
     watchlist_add_view,
@@ -16,6 +17,7 @@ from .views import (
 )
 
 urlpatterns = [
+    path("health/", health_check, name="health_check"),
     path("", home_redirect, name="home"),
     path("explore/", ExploreView.as_view(), name="explore"),
     path("dashboard/", DashboardView.as_view(), name="dashboard"),
